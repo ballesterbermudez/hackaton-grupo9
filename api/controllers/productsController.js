@@ -2,6 +2,7 @@ const path = require('path');
 const persistence = require('../persistence/persistence');
 const { ValidationError } = require('sequelize');
 const tiendaController = require('./tiendaController');
+const db = require('../database/models');
 const modelName = 'Productos';
 
 const directory = path.resolve(__dirname, '..', 'data');
@@ -25,6 +26,7 @@ const controller = {
                     productos[i].id_producto
                 );
                 let productoTienda = {
+                    id: producto.id,
                     nombreProd: producto.nombre,
                     precio: productos[i].precio,
                     imagen: 'url.com',
@@ -44,16 +46,15 @@ const controller = {
     //retorna los detalles de un producto
     details: async (req, resp) => {
         try {
-            const criteria = {
-                where: { id: req.params.id },
-            };
-            const prod = await persistence.searchByCriteria(
-                modelName,
-                criteria
+            const prod = await db.sequelize.query(
+                'SELECT Productos.nombre, Tiendas_productos.precio, Tiendas_productos.descripcion, Tiendas.nombre as tiendaNombre, Tiendas_productos.id as id_short FROM `Productos` JOIN Tiendas_productos ON Productos.id = Tiendas_productos.id_producto JOIN Tiendas on Tiendas_productos.id_tienda = Tiendas.id WHERE Productos.id = ' +
+                    req.params.id
             );
+            let res = prod[0];
+            res.id_short = 0;
 
-            if (prod.length > 0) {
-                resp.status(200).json(prod);
+            if (res.length > 0) {
+                resp.status(200).json(res);
             } else {
                 resp.status(404).json({ message: 'Producto no encontrado' });
             }
