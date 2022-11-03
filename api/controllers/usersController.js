@@ -6,8 +6,8 @@ const usersController = {
         try {
             const body = req.body;
             if (!(body.email && body.pass && body.nombre && body.apellido))
-                return res.status(404).json({
-                    msg: 'Not Found',
+                return res.status(401).json({
+                    msg: 'Bad request',
                 });
             const user = await persistence.insert('Usuarios', body);
             if (user) {
@@ -31,17 +31,18 @@ const usersController = {
     },
     editUser: async (req, res) => {
         try {
-            const id = Number(req.params.id);
+            const id = Number(req.params.userId);
             const body = req.body;
-            const user = persistence.updateData('Usuarios', id, body);
+            const user = await persistence.searchById('Usuarios', id);
             if (!user)
                 return res.status(404).json({
                     msg: 'Not Found',
                 });
+            await persistence.updateData('Usuarios', id, body);
             res.status(200).json({
                 msg: 'User edited successfully',
             });
-        } catch {
+        } catch (error) {
             if (error instanceof ValidationError) {
                 const errorArray = [];
                 error.errors.forEach((el, i) => {
@@ -57,8 +58,8 @@ const usersController = {
     },
     deleteUser: async (req, res) => {
         try {
-            const id = Number(req.params.id);
-            const user = persistence.searchById('Usuarios', id);
+            const id = Number(req.params.userId);
+            const user = await persistence.searchById('Usuarios', id);
             if (!user)
                 return res.status(404).json({
                     msg: 'Not found',
