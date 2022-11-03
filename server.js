@@ -3,7 +3,7 @@ const app = express();
 const routeLogin = require('./api/routes/routeLogin');
 const routeProducts = require('./api/routes/routeProducts');
 const routeUsers = require('./api/routes/routeUsers');
-const routeTienda = require('./api/routes/routeTiendas');
+const routeTiendas = require('./api/routes/routeTiendas');
 const verifyJWT = require('./api/middelware/verifyJWT');
 
 const db = require('./api/database/models');

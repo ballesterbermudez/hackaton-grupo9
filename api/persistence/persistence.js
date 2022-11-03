@@ -2,15 +2,11 @@
 const db = require("../database/models");
 
 const persistence = {
-  searchBYUsername: async (username, password) => {
+  searchBYEmail: async (email, password) => {
     try {
-      const user = await db.User.findOne({
-        attributes: ["id", "username"],
-        where: { username: username, password: password },
-        include: {
-          association: "userrole",
-          attributes: ["role"],
-        },
+      const user = await db.Usuarios.findOne({
+        attributes: ["id", "email"],
+        where: { email: email, pass: password }
       });
       return user;
     } catch (error) {

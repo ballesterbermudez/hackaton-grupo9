@@ -1,6 +1,5 @@
 const express = require("express");
 const route = express.Router();
-const cartController = require("../controllers/cartController");
 const usersController = require("../controllers/usersController");
 const { login } = require("../controllers/loginControllers");
 const verifyJWT = require("../middelware/verifyJWT");
