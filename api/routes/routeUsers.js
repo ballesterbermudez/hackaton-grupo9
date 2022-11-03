@@ -13,12 +13,12 @@ route.post(
 );
 route.put(
   "/:userId",
-  verifyJWT,
+  //verifyJWT,
   usersController.editUser
 );
 route.delete(
   "/:userId",
-  verifyJWT,
+  //verifyJWT,
   usersController.deleteUser
 );
 

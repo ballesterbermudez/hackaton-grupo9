@@ -37,7 +37,7 @@ const persistence = {
   updateData: async (modelName, id, datos) => {
     try {
       await db[modelName].update(datos, {
-        where: { id: id }, transaction: transaction
+        where: { id: id }
       });
     } catch (error) {
       throw error;
