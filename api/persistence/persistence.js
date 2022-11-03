@@ -38,17 +38,17 @@ const persistence = {
 
 
 
-  updateData: async (modelName, id, datos, transaction = null) => {
+  updateData: async (modelName, id, datos) => {
     try {
       await db[modelName].update(datos, {
-        where: { id: id }, transaction: transaction
+        where: { id: id }
       });
     } catch (error) {
       throw error;
     }
   },
 
-  delete: async (modelName, id, ) => {
+  delete: async (modelName, id ) => {
     try {
       await db[modelName].destroy({ where: { id: id } });
     } catch (error) {
@@ -66,9 +66,9 @@ const persistence = {
     }
   },
 
-  inster: async (modelName, datos, transaction = null) => {
+  insert: async (modelName, datos) => {
     try {
-      const newData = await db[modelName].create(datos,transaction);
+      const newData = await db[modelName].create(datos);
       return newData;
     } catch (error) {
       throw error;
