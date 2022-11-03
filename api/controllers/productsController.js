@@ -1,8 +1,8 @@
 const path = require('path');
 const persistence = require('../persistence/persistence');
 const { ValidationError } = require('sequelize');
-const models = require('../database/models');
-const modelName = 'Product';
+const tiendaController = require('./tiendaController');
+const modelName = 'Productos';
 
 const directory = path.resolve(__dirname, '..', 'data');
 
@@ -10,47 +10,19 @@ const controller = {
     //retorna la lista de los productos
     list: async (req, resp) => {
         try {
-            const category = req.query.category;
-
-            if (category) {
-                const criteria = {
-                    include: {
-                        association: 'product_category',
-                        attributes: ['id', 'title'],
-                        include: { association: 'galery', limit: 1 },
-                    },
-                    where: { title: category.toLowerCase() },
-                };
-                const data = await persistence.searchByCriteria(
-                    'Category',
-                    criteria
-                );
-
-                if (data.length > 0) {
-                    resp.status(200).json(data);
-                } else {
-                    resp.status(404).json({
-                        message: 'No hubieron resultados',
-                    });
-                }
-            } else {
-                const criteria = {
-                    include: {
-                        association: 'category_product',
-                        attributes: ['title'],
-                    },
-                    include: { association: 'galery', limit: 1 },
-                };
-                const data = await persistence.searchByCriteria(
-                    modelName,
-                    criteria
-                );
-
-                resp.status(200).json(data);
-            }
+            const criteria = {
+                include: {
+                    association: 'tiendas_productos',
+                },
+                attributes: {
+                    exclude: ['descripcion'],
+                },
+            };
+            let productos = persistence.searchByCriteria(modelName, criteria);
+            resp.status(200).json(productos);
         } catch (error) {
             resp.status(500).json({
-                message: 'No se pudo acceder a la informacion',
+                msg: 'No se pudo acceder a la informacion',
             });
         }
     },
@@ -59,11 +31,6 @@ const controller = {
     details: async (req, resp) => {
         try {
             const criteria = {
-                include: {
-                    association: 'product_category',
-                    attributes: ['id', 'title'],
-                },
-                include: { association: 'galery' },
                 where: { id: req.params.id },
             };
             const prod = await persistence.searchByCriteria(
@@ -77,34 +44,37 @@ const controller = {
                 resp.status(404).json({ message: 'Producto no encontrado' });
             }
         } catch (error) {
+            console.log(error);
             resp.status(500).json({
-                message: 'No se pudo acceder a la informacion',
+                msg: 'No se pudo acceder a la informacion',
             });
         }
     },
     //crea un producto
     create: async (req, resp) => {
-        const { title, price, description, category, mostwanted, stock } =
-            req.body;
+        const { nombre, precio, descripcion, id_tienda } = req.body;
         const product = {
-            title,
-            price,
-            description,
-            id_category: category,
-            mostwanted,
-            stock,
+            nombre,
         };
-
         try {
-            if (await persistence.searchById('Category', category)) {
-                const newProd = await persistence.inster(modelName, product);
+            const tienda = await persistence.searchById('Tiendas', id_tienda);
+            if (tienda) {
+                const newProd = await persistence.insert(modelName, product);
+                await persistence.insert('Tiendas_productos', {
+                    id_producto: newProd.id,
+                    id_tienda: tienda.id,
+                    precio,
+                    descripcion,
+                    url: `http://localhost:8080/productos/${newProd.id}`,
+                });
                 resp.status(200).json(newProd);
             } else {
                 resp.status(404).json({
-                    message: 'no se encontro la categoria',
+                    msg: 'no se encontro la tienda',
                 });
             }
         } catch (error) {
+            console.log(error);
             if (error instanceof ValidationError) {
                 let errorArray = [];
                 error.errors.forEach((el, i) => {
@@ -113,7 +83,7 @@ const controller = {
                 resp.status(401).json(errorArray);
             } else {
                 resp.status(500).json({
-                    message: 'No fue posible insertar el producto',
+                    msg: 'No fue posible insertar el producto',
                 });
             }
         }
@@ -125,17 +95,13 @@ const controller = {
                 modelName,
                 req.params.id
             );
-
             if (product != null) {
                 let { ...parametorsModificados } = req.body;
-
                 const newProd = {
-                    title: parametorsModificados.title,
-                    price: parametorsModificados.price,
-                    description: parametorsModificados.description,
-                    id_category: parametorsModificados.category,
-                    mostwanted: parametorsModificados.mostwanted,
-                    stock: parametorsModificados.stock,
+                    nombre: parametorsModificados.nombre,
+                    // precio: parametorsModificados.precio,
+                    // descripcion: parametorsModificados.descripcion,
+                    // id_tienda: parametorsModificados.id_tienda,
                 };
 
                 await persistence.updateData(modelName, req.params.id, newProd);
@@ -147,7 +113,7 @@ const controller = {
 
                 resp.status(200).json(product);
             } else {
-                resp.status(404).json({ message: 'Producto no encontrado' });
+                resp.status(404).json({ msg: 'Producto no encontrado' });
             }
         } catch (error) {
             if (error instanceof ValidationError) {
@@ -158,43 +124,9 @@ const controller = {
                 resp.status(401).json(errorArray);
             } else {
                 resp.status(500).json({
-                    message: 'No fue posible modificar el producto',
+                    msg: 'No fue posible modificar el producto',
                 });
             }
-        }
-    },
-    //busca un producto a travez de una palabra clave
-    search: async (req, resp) => {
-        const keyword = req.query.q;
-        try {
-            const data = await persistence.searchByKeyword(keyword);
-
-            if (data.length > 0) {
-                resp.status(200).json(data);
-            } else {
-                resp.status(404).json({ message: 'No hubieron resultados' });
-            }
-        } catch (error) {
-            resp.status(500).json({ message: 'Error interno' });
-        }
-    },
-
-    mostwanted: async (req, resp) => {
-        try {
-            const data = await persistence.searchByCriteria(modelName, {
-                include: { association: 'galery', limit: 1 },
-                where: { mostwanted: true },
-            });
-
-            if (data.length > 0) {
-                resp.status(200).json(data);
-            } else {
-                resp.status(404).json({ message: 'No hubieron resultados' });
-            }
-        } catch (error) {
-            resp.status(500).json({
-                message: 'No se pudo acceder a la informacion',
-            });
         }
     },
 
@@ -210,10 +142,10 @@ const controller = {
                 await persistence.delete(modelName, req.params.id);
                 resp.status(200).json(product);
             } else {
-                resp.status(404).json({ message: 'no existe el articulo' });
+                resp.status(404).json({ msg: 'no existe el articulo' });
             }
         } catch (error) {
-            resp.status(500).json({ message: 'Error interno' });
+            resp.status(500).json({ msg: 'Error interno' });
         }
     },
 };
