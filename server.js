@@ -21,10 +21,10 @@ app.get('/', (req, res) => {
 // Rutas
 
 app.use('/login', routeLogin);
-app.use('/products', verifyJWT, routeProducts);
-app.use('/users', routeUsers);
-app.use('/tiendas', verifyJWT, routeTiendas);
 app.use('/short', routeRedirect);
+app.use('/productos', routeProducts);
+app.use('/usuarios', routeUsers);
+app.use('/tiendas', routeTiendas);
 
 // Server open
 
