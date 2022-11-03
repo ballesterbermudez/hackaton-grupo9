@@ -6,11 +6,15 @@ const routeUsers = require('./api/routes/routeUsers');
 const routeTiendas = require('./api/routes/routeTiendas');
 const routeRedirect = require('./api/routes/routeRedirect');
 const verifyJWT = require('./api/middelware/verifyJWT');
+const cors = require('cors');
 
 const db = require('./api/database/models');
+const { urlencoded } = require('express');
 require('dotenv').config();
 
 app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+app.use(cors())
 
 // Home
 

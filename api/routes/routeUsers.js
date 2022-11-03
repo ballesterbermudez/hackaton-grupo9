@@ -6,7 +6,7 @@ const verifyJWT = require('../middelware/verifyJWT');
 
 //Rutas de users
 
-route.post('/', verifyJWT, usersController.createUser);
+route.post('/', /*verifyJWT,*/ usersController.createUser);
 route.put('/:userId', verifyJWT, usersController.editUser);
 route.delete('/:userId', verifyJWT, usersController.deleteUser);
 
