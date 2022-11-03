@@ -51,7 +51,7 @@ const controller = {
                     req.params.id
             );
             let res = prod[0];
-            res.id_short = 0;
+            res[0].id_short = 'http://localhost:3000/short/' + res[0].id_short;
 
             if (res.length > 0) {
                 resp.status(200).json(res);
