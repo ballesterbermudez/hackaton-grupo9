@@ -6,11 +6,11 @@ const usersController = {
   createUser: async (req, res) => {
     try{
       const body = req.body;
-      if(!(body.email && body.password && body.name && body.lastname))
+      if(!(body.email && body.pass && body.nombre && body.apellido))
         return res.status(404).json({
           msg: "Not Found"
         })
-      const user = persistence.insert('Usuarios', body);
+      const user = await persistence.insert('Usuarios', body);
       if (user){
         res.status(200).json({
           msg: "User created successfully"
@@ -34,7 +34,7 @@ const usersController = {
     try{
       const id = Number(req.params.id)
       const body = req.body;
-      const user = persistence.updateData('Usuarios', id, body)
+      const user = await persistence.updateData('Usuarios', id, body)
       if(!user)
         return res.status(404).json({
           msg: "Not Found"
@@ -60,7 +60,7 @@ const usersController = {
   deleteUser: async (req, res) => {
     try{
       const id = Number(req.params.id);
-      const user = persistence.searchById('Usuarios', id)
+      const user =await persistence.searchById('Usuarios', id)
       if(!user)
         return res.status(404).json({
           msg: "Not found"

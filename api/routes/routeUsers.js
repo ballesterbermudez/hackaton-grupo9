@@ -8,7 +8,7 @@ const verifyJWT = require("../middelware/verifyJWT");
 
 route.post(
   "/",
-  verifyJWT,
+  //verifyJWT,
   usersController.createUser
 );
 route.put(
