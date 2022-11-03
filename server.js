@@ -20,8 +20,8 @@ app.get('/', (req, res) => {
 // Rutas
 
 app.use('/login', routeLogin);
-app.use('/products', verifyJWT, routeProducts);
-app.use('/users', routeUsers);
+app.use('/productos', verifyJWT, routeProducts);
+app.use('/usuarios', routeUsers);
 app.use('/tiendas', verifyJWT, routeTiendas);
 
 // Server open

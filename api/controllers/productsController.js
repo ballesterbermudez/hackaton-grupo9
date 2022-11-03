@@ -1,7 +1,6 @@
 const path = require('path');
 const persistence = require('../persistence/persistence');
 const { ValidationError } = require('sequelize');
-const models = require('../database/models');
 const tiendaController = require('./tiendaController');
 const modelName = 'Productos';
 
@@ -59,9 +58,10 @@ const controller = {
         const product = {
             nombre,
         };
-        tiendaController.getTiendaId(id_tienda);
         try {
+            console.log('hola1');
             const tienda = await persistence.searchById('Tiendas', id_tienda);
+            console.log('hola2');
             if (tienda) {
                 const newProd = await persistence.insert(modelName, product);
                 const tiendas_producto = await persistence.insert(
@@ -76,7 +76,7 @@ const controller = {
                 resp.status(200).json(newProd);
             } else {
                 resp.status(404).json({
-                    msg: 'no se encontro la categoria',
+                    msg: 'no se encontro la tienda',
                 });
             }
         } catch (error) {
