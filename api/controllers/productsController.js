@@ -25,6 +25,7 @@ const controller = {
                     productos[i].id_producto
                 );
                 let productoTienda = {
+                    id : producto.id,
                     nombreProd: producto.nombre,
                     precio: productos[i].precio,
                     imagen: 'url.com',
