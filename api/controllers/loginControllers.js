@@ -2,28 +2,25 @@ const generateJWT = require("../../helpers/generateToken");
 const persistance = require("../persistence/persistence");
 
 const login = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
   try {
-
-    const user = await persistance.searchBYUsername(username, password);
+    const user = await persistance.searchBYEmail(email, password);
    
     if (user != null) {
       
-      const {id,username,userrole}=user
-      const {role}=userrole
+      const {id,email}=user
 
       const payload = {
         id: id,
-        username: username,
-        role: role,
+        email: email
       };
 
       res.status(200).json({
         success: true,
-        message: "Authorized",
+        msg: "Authorized",
         user: {
           iduser: id,
-          username:username,
+          email:email
         },
         token: await generateJWT(payload),
       });

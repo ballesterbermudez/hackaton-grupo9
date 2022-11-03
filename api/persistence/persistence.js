@@ -1,15 +1,11 @@
 const db = require('../database/models');
 
 const persistence = {
-    searchBYUsername: async (username, password) => {
+    searchBYEmail: async (email, password) => {
         try {
-            const user = await db.User.findOne({
-                attributes: ['id', 'username'],
-                where: { username: username, password: password },
-                include: {
-                    association: 'userrole',
-                    attributes: ['role'],
-                },
+            const user = await db.Usuarios.findOne({
+                attributes: ['id', 'email'],
+                where: { email: email, pass: password },
             });
             return user;
         } catch (error) {
@@ -17,6 +13,73 @@ const persistence = {
         }
     },
 
+    searchAll: async (modelName) => {
+        try {
+            const info = await db[modelName].findAll();
+            return info;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    searchById: async (modelName, id) => {
+        try {
+            const info = await db[modelName].findByPk(id);
+            return info;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    updateData: async (modelName, id, datos, transaction = null) => {
+        try {
+            await db[modelName].update(datos, {
+                where: { id: id },
+                transaction: transaction,
+            });
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    delete: async (modelName, id) => {
+        try {
+            await db[modelName].destroy({ where: { id: id } });
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    deleteOneProduct: async (userId, productId, transaction = null) => {
+        try {
+            await db.Cart.destroy({
+                where: { id_product: productId, id_usuario: userId },
+                transaction: transaction,
+            });
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    inster: async (modelName, datos, transaction = null) => {
+        try {
+            const newData = await db[modelName].create(datos, transaction);
+            return newData;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    //Criteria es un objeto con las propiedades dentro del findAll
+
+    searchByCriteria: async (modelName, criteria) => {
+        try {
+            const respuesta = await db[modelName].findAll(criteria);
+            return respuesta;
+        } catch (error) {
+            throw error;
+        }
+    },
     searchAll: async (modelName) => {
         try {
             const info = await db[modelName].findAll();
