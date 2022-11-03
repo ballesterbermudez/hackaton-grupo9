@@ -2,6 +2,7 @@ const path = require('path');
 const persistence = require('../persistence/persistence');
 const { ValidationError } = require('sequelize');
 const tiendaController = require('./tiendaController');
+const db = require('../database/models');
 const modelName = 'Productos';
 
 const directory = path.resolve(__dirname, '..', 'data');
@@ -12,7 +13,8 @@ const controller = {
         try {
             const criteria = {
                 include: {
-                    association: 'tiendas_productos',
+                    model: db.Productos,
+                    as: 'tiendas_productos',
                 },
                 attributes: {
                     exclude: ['descripcion'],
