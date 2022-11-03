@@ -60,16 +60,7 @@ const persistence = {
             throw error;
         }
     },
-
-    inster: async (modelName, datos, transaction = null) => {
-        try {
-            const newData = await db[modelName].create(datos, transaction);
-            return newData;
-        } catch (error) {
-            throw error;
-        }
-    },
-
+    
     //Criteria es un objeto con las propiedades dentro del findAll
 
     searchByCriteria: async (modelName, criteria) => {
@@ -98,11 +89,10 @@ const persistence = {
         }
     },
 
-    updateData: async (modelName, id, datos, transaction = null) => {
+    updateData: async (modelName, id, datos) => {
         try {
             await db[modelName].update(datos, {
-                where: { id: id },
-                transaction: transaction,
+                where: { id: id }
             });
         } catch (error) {
             throw error;

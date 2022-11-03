@@ -20,13 +20,8 @@ app.get('/', (req, res) => {
 // Rutas
 
 app.use('/login', routeLogin);
-<<<<<<< HEAD
-app.use('/products', verifyJWT, routeProducts);
-app.use('/users', routeUsers);
-=======
 app.use('/productos', routeProducts);
 app.use('/usuarios', routeUsers);
->>>>>>> 494abe78e01e3a4d349db417930311767d70b95c
 app.use('/tiendas', routeTiendas);
 
 // Server open

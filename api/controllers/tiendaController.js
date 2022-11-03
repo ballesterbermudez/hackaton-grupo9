@@ -1,4 +1,4 @@
-const { persistence } = require('../persistence/persistence');
+const persistence = require('../persistence/persistence');
 const { response, request } = require('express');
 const { ValidationError } = require('sequelize');
 
@@ -15,9 +15,8 @@ const create = async (req = request, res = response) => {
         };
         //Busco tienda por nombre
         const existe = await getTienda(data);
-        console.log('hola')
         //Verifico existencia
-        if (existe) {
+        if (existe.length != 0) {
             return res.status(400).json({
                 msg: 'Ya existe una tienda con ese nombre'
             })
@@ -46,6 +45,24 @@ const create = async (req = request, res = response) => {
     }
 }
 
+const readAll = async (req = request, res = response) => {
+    try {                
+        console.log('hola')
+        const tiendas = await persistence.searchAll("Tiendas");
+        console.log(tiendas)
+        res.status(200).json({
+            msg: 'Tienda encontrada',
+            tiendas: tiendas
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            msg: 'Server error',
+            error: error
+        });
+    }
+}
+
 const readByName = async (req = request, res = response) => {
     try {
         if (!req.body.nombre) {
@@ -60,7 +77,7 @@ const readByName = async (req = request, res = response) => {
         
         const existe = await getTienda(nombre);
 
-        if (!existe) {
+        if (existe.length === 0) {
             return res.status(404).json({
                 msg: 'not found'
             })
@@ -97,14 +114,14 @@ const update = async (req = request, res = response) => {
 
         const existe = await getTienda(data);
 
-        if (!existe) {
+        if (existe.length === 0) {
             return res.status(404).json({
                 msg: 'not found'
             });
         }
 
         await persistence.updateData("Tiendas", id, newData);
-
+        console.log('hola')
         const tienda = await getTienda(newData);
 
         res.status(200).json({
@@ -134,7 +151,7 @@ const deleteTienda = async (req = request, res = response) => {
 
         const existe = await getTienda({ id: id});
 
-        if (!existe) {
+        if (existe.length === 0) {
             return res.status(404).json({
                 msg: 'not found'
             })
@@ -164,9 +181,7 @@ const deleteTienda = async (req = request, res = response) => {
 //Se le pasa el obj que va dentro del where
 async function getTienda(criterio) {
     const tienda = await persistence.searchByCriteria("Tiendas", { where: criterio });
-    console.log('aca')
-
     return tienda;
 }
 
-module.exports = { create, getTienda, update, readByName, deleteTienda };
+module.exports = { create, getTienda, update, readAll, readByName, deleteTienda };
