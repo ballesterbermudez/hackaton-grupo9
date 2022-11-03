@@ -1,5 +1,6 @@
-const express = require("express");
+const express = require('express');
 const route = express.Router();
+<<<<<<< HEAD
 const usersController = require("../controllers/usersController");
 const { login } = require("../controllers/loginControllers");
 const verifyJWT = require("../middelware/verifyJWT");
@@ -27,8 +28,19 @@ route.delete(
   verifyJWT,
   usersController.deleteUser
 );
+=======
+const usersController = require('../controllers/usersController');
+const { login } = require('../controllers/loginControllers');
+const verifyJWT = require('../middelware/verifyJWT');
+
+//Rutas de users
+
+route.post('/', verifyJWT, usersController.createUser);
+route.put('/:userId', verifyJWT, usersController.editUser);
+route.delete('/:userId', verifyJWT, usersController.deleteUser);
+>>>>>>> 494abe78e01e3a4d349db417930311767d70b95c
 
 //Rutas alias de login
-route.post("/login", login);
+route.post('/login', login);
 
 module.exports = route;
