@@ -8,17 +8,16 @@ const verifyJWT = require("../middelware/verifyJWT");
 
 route.post(
   "/",
-  //verifyJWT,
   usersController.createUser
 );
 route.put(
   "/:userId",
-  //verifyJWT,
+  verifyJWT,
   usersController.editUser
 );
 route.delete(
   "/:userId",
-  //verifyJWT,
+  verifyJWT,
   usersController.deleteUser
 );
 
