@@ -31,9 +31,6 @@ const controller = {
     details: async (req, resp) => {
         try {
             const criteria = {
-                include: {
-                    association: 'tiendas_productos',
-                },
                 where: { id: req.params.id },
             };
             const prod = await persistence.searchByCriteria(
@@ -47,6 +44,7 @@ const controller = {
                 resp.status(404).json({ message: 'Producto no encontrado' });
             }
         } catch (error) {
+            console.log(error);
             resp.status(500).json({
                 msg: 'No se pudo acceder a la informacion',
             });
@@ -59,20 +57,16 @@ const controller = {
             nombre,
         };
         try {
-            console.log('hola1');
             const tienda = await persistence.searchById('Tiendas', id_tienda);
-            console.log('hola2');
             if (tienda) {
                 const newProd = await persistence.insert(modelName, product);
-                const tiendas_producto = await persistence.insert(
-                    'Tiendas_productos',
-                    {
-                        id_producto: newProd.id,
-                        id_tienda: tienda.id,
-                        precio,
-                        descripcion,
-                    }
-                );
+                await persistence.insert('Tiendas_productos', {
+                    id_producto: newProd.id,
+                    id_tienda: tienda.id,
+                    precio,
+                    descripcion,
+                    url: `http://localhost:8080/productos/${newProd.id}`,
+                });
                 resp.status(200).json(newProd);
             } else {
                 resp.status(404).json({
@@ -80,6 +74,7 @@ const controller = {
                 });
             }
         } catch (error) {
+            console.log(error);
             if (error instanceof ValidationError) {
                 let errorArray = [];
                 error.errors.forEach((el, i) => {
