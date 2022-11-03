@@ -4,6 +4,7 @@ const routeLogin = require('./api/routes/routeLogin');
 const routeProducts = require('./api/routes/routeProducts');
 const routeUsers = require('./api/routes/routeUsers');
 const routeTiendas = require('./api/routes/routeTiendas');
+const routeRedirect = require('./api/routes/routeRedirect');
 const verifyJWT = require('./api/middelware/verifyJWT');
 
 const db = require('./api/database/models');
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 // Rutas
 
 app.use('/login', routeLogin);
+app.use('/short', routeRedirect);
 app.use('/productos', routeProducts);
 app.use('/usuarios', routeUsers);
 app.use('/tiendas', routeTiendas);
@@ -41,5 +43,6 @@ const server = app.listen(process.env.PORT, async () => {
 app.get('*', (req, res) => {
     res.status(200).redirect('/');
 });
+
 
 module.exports = { app, server };
