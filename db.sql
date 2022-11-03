@@ -11,10 +11,13 @@ CREATE TABLE `Productos` (
 );
 
 CREATE TABLE `Tiendas_productos` (
+	`id` bigint NOT NULL AUTO_INCREMENT,
 	`id_producto` INT NOT NULL,
 	`id_tienda` INT NOT NULL,
 	`precio` INT NOT NULL,
-	`descripcion` varchar(255) NOT NULL
+	`descripcion` varchar(255) NOT NULL,
+	`url` varchar(255) NOT NULL UNIQUE,
+	PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `Usuarios` (
@@ -29,3 +32,7 @@ CREATE TABLE `Usuarios` (
 ALTER TABLE `Tiendas_productos` ADD CONSTRAINT `Tiendas_productos_fk0` FOREIGN KEY (`id_producto`) REFERENCES `Productos`(`id`);
 
 ALTER TABLE `Tiendas_productos` ADD CONSTRAINT `Tiendas_productos_fk1` FOREIGN KEY (`id_tienda`) REFERENCES `Tiendas`(`id`);
+
+
+
+

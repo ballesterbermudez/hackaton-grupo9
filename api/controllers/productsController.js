@@ -11,16 +11,30 @@ const controller = {
     list: async (req, resp) => {
         try {
             const criteria = {
-                include: {
-                    association: 'tiendas_productos',
-                },
-                attributes: {
-                    exclude: ['descripcion'],
-                },
+                associations: { all: true, nested: true },
             };
-            let productos = persistence.searchByCriteria(modelName, criteria);
-            resp.status(200).json(productos);
+            let productos = await persistence.searchAll('Tiendas_productos');
+            let productosTienda = [];
+            for (let i = 0; i < productos.length; i++) {
+                let tienda = await persistence.searchById(
+                    'Tiendas',
+                    productos[i].id_tienda
+                );
+                let producto = await persistence.searchById(
+                    'Productos',
+                    productos[i].id_producto
+                );
+                let productoTienda = {
+                    nombreProd: producto.nombre,
+                    precio: productos[i].precio,
+                    imagen: 'url.com',
+                    nombreTienda: tienda.nombre,
+                };
+                productosTienda.push(productoTienda);
+            }
+            resp.status(200).json(productosTienda);
         } catch (error) {
+            console.log(error);
             resp.status(500).json({
                 msg: 'No se pudo acceder a la informacion',
             });
